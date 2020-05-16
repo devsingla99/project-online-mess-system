@@ -1,0 +1,42 @@
+<?php
+session_start();
+if($_SESSION["admin"]==""){
+	header('location:"mess_login.php');
+}
+error_reporting(0);
+$d=mysqli_connect('localhost','root','');
+$e=mysqli_select_db($d,'mess');
+
+$x=$_POST['firstname'];
+$z=$_POST['room'];
+$w=$_POST['pin'];
+
+$f=mysqli_query($d,"insert into place_order(firstname,room,pin)values('$x','$z','$w')");
+$e1=mysqli_query($d,"select * from place_order");
+while($e2=mysqli_fetch_array($e1)){
+	$id=$e2[0];
+}
+foreach ($_COOKIE['item'] as $name => $value) 
+{
+	$av;
+	$value11=explode("__",$value);
+	mysqli_query($d,"insert into orders(order_id,name,price,quantity,total)values('$id','$value11[0]','$value11[1]','$value11[2]','$value11[3]')");
+
+	$run=mysqli_query($d,"select * from food_items");
+	while($row=mysqli_fetch_array($run))
+	{
+		if($row['name']==$value11[0]){
+		
+		$av=$row['availability'];
+		$id1=$row['id'];
+	}
+	}
+	$av=$av-$value11[2];
+	//echo $av;
+	mysqli_query($d,"UPDATE food_items SET availability=$av WHERE id=$id1");
+
+}
+echo "your order is placed    ur order no. is ";
+echo $id;
+
+?>
